@@ -1,0 +1,35 @@
+-- STATS --
+
+speed (yellow)
+- run speed
+- walk speed
+- acceleration
+
+bullet (orange)
+- bullet speed
+- reload speed
+- bullet range
+
+damage (red)
+- bullet damage
+- melee damage
+- body damage
+
+health (green)
+- max health
+- current health
+- health regen
+
+shield (blue)
+- max shield
+- current shield
+- shield regen
+
+-- TYPES --
+
+common (gray)
+uncommon (light gray)
+rare (yellow)
+epic (purple)
+devil (black)
+god (white)

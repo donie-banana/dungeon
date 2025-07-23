@@ -1,25 +1,28 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using ST = StatType;
+using JetBrains.Annotations;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody rb;
     public Camera playerCamera; 
     public GameObject bullet;
-    public float thrust;
-    public float maxSpeed;
-    public float maxRunSpeed;
     private Keyboard input;
     private Mouse mouse;
     private const float decelFactor = 0.8f;
     private (Key key, Func<Vector3> dir)[] axes;
+    private (GameObject item, float order, float amount)[] inventory;
+    public Stats stats;
+    private float timer = 0;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         input = Keyboard.current;
         mouse = Mouse.current;
+        stats = GetComponent<Stats>();
 
         axes = new (Key, Func<Vector3>)[]
         { 
@@ -35,9 +38,12 @@ public class Player : MonoBehaviour
         Move();
         Look();
 
-        if (mouse.leftButton.wasPressedThisFrame)
+        timer += Time.deltaTime;
+
+        if (mouse.leftButton.wasPressedThisFrame && timer >= stats["reloadSpeed "])
         {
             shoot();
+            timer = 0;
         }
     }
 
@@ -45,8 +51,9 @@ public class Player : MonoBehaviour
     {
         var pos = playerCamera.transform.position - playerCamera.transform.up * 0.25f + playerCamera.transform.forward;
         GameObject bulletInstance = Instantiate(bullet, pos, playerCamera.transform.rotation);
-        BulletController bulletController = bulletInstance.GetComponent<BulletController>();
-        bulletController.PlayerVel = rb.linearVelocity; 
+        BulletController Bctrl = bulletInstance.GetComponent<BulletController>();
+        Bctrl.PlayerVel = rb.linearVelocity;
+        Bctrl.stats = stats;
     }
 
     void Look()
@@ -93,10 +100,10 @@ public class Player : MonoBehaviour
         }
 
         if (dir != Vector3.zero)
-            rb.AddForce(dir.normalized * thrust);
+            rb.AddForce(dir.normalized * stats["bulletSpeed"]);
 
         bool running = IsKeyPressed(Key.LeftShift) || IsKeyPressed(Key.RightShift);
-        float limit = running ? maxRunSpeed : maxSpeed;
+        float limit = running ? stats["runSpeed"] : stats["walkSpeed"];
         if (rb.linearVelocity.magnitude > limit)
             rb.linearVelocity = rb.linearVelocity.normalized * limit;
     }
