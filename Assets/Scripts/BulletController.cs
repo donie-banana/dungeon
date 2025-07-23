@@ -2,15 +2,28 @@ using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public float thrust;
+    public float lifeTime;
+    public Vector3 PlayerVel;
+    private Rigidbody rb;
+
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
+
+        float forwardComponent = Vector3.Dot(PlayerVel, transform.forward);
+        float rightComponent = Vector3.Dot(PlayerVel, transform.right);
+
+        Vector3 bulletVelocity = transform.forward * thrust
+            + transform.forward * forwardComponent * 0.2f
+            + transform.right * rightComponent * 0.8f;
+
+        rb.linearVelocity = bulletVelocity;
+        Destroy(gameObject, lifeTime);
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnCollisionEnter(Collision collision)
     {
-        
+        Destroy(gameObject);
     }
 }

@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = player.transform.position + new Vector3(0f, .5f, 0f);
+        transform.position = player.transform.position + new Vector3(0f, 1f, 0f);
 
         mouseX = Mouse.current != null ? Mouse.current.delta.x.ReadValue() : 0f;
         mouseY = Mouse.current != null ? Mouse.current.delta.y.ReadValue() : 0f;
