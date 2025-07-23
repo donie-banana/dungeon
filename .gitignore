@@ -12,6 +12,8 @@
 *.userosscache
 *.sln.docstates
 
+.vscode/*
+
 # Unity
 [Ll]ibrary/
 [Tt]emp/
