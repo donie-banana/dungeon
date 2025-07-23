@@ -11,8 +11,9 @@
 *.suo
 *.userosscache
 *.sln.docstates
+.vsconfig
 
-.vscode/*
+.vscode/
 
 # Unity
 [Ll]ibrary/
