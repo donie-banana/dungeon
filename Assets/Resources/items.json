@@ -17,6 +17,28 @@
         }
     },
 
+    "statCategories": {
+        "runSpeed": "speed",
+        "walkSpeed": "speed",
+        "accel": "speed",
+
+        "bulletSpeed": "bullet",
+        "reloadSpeed": "bullet",
+        "bulletRange": "bullet",
+
+        "bulletDamage": "damage",
+        "meleeDamage": "damage",
+        "bodyDamage": "damage",
+
+        "maxHealth": "health",
+        "health": "health",
+        "healthRegen": "health",
+
+        "maxShield": "shield",
+        "shield": "shield",
+        "shieldRegen": "shield"
+    },
+
     "rarities": {
         "common": "44%",
         "uncommon": "28%",
@@ -30,7 +52,7 @@
         "1": {
             "type": "common",
             "stats": {
-                "damage": {
+                "bulletDamage": {
                     "type": "*",
                     "value": "10"
                 }
