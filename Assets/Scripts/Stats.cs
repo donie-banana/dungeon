@@ -28,6 +28,7 @@ public class StatEntry
 {
     public StatType stat;
     public float value;
+    public char type; // only for items
 }
 
 // 3. The Stats container
@@ -87,5 +88,51 @@ public class Stats : MonoBehaviour
             else
                 throw new ArgumentException($"StatType '{typeName}' not found.");
         }
+    }
+
+    public char GetType(StatType type)
+    {
+        var entry = entries.Find(e => e.stat == type);
+        if (entry != null)
+            return entry.type;
+        throw new ArgumentException($"StatType '{type}' not found in entries.");
+    }
+
+    public bool HasStat(StatType type)
+    {
+        return entries.Exists(e => e.stat == type);
+    }
+
+    // public void addEntry(StatType stat, float value, char type)
+    // {
+    //     var entry = entries.Find(e => e.stat == stat);
+    //     if (entry != null)
+    //     {
+    //         entry.value = value;
+    //         entry.type = type;
+    //     }
+    //     else
+    //     {
+    //         entries.Add(new StatEntry { stat = stat, value = value, type = type });
+    //     }
+    //     values[(int)stat] = value;
+    // }
+
+    public void addEntry(string statName, float value, char type)
+    {
+        if (!Enum.TryParse(statName, true, out StatType stat))
+            throw new ArgumentException($"StatType '{statName}' not found.");
+
+        var entry = entries.Find(e => e.stat == stat);
+        if (entry != null)
+        {
+            entry.value = value;
+            entry.type = type;
+        }
+        else
+        {
+            entries.Add(new StatEntry { stat = stat, value = value, type = type });
+        }
+        values[(int)stat] = value;
     }
 }

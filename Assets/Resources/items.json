@@ -1,0 +1,76 @@
+{
+    "colors": {
+        "type": {
+            "common": "none",
+            "uncommon": "#808080",
+            "rare": "#800080",
+            "epic": "#FFD700",
+            "devil": "#000000",
+            "god": "#FFFFFF"
+        },
+        "stat": {
+            "speed": "#FFFF00",
+            "damage": "#FF0000",
+            "bullet": "#FFA500",
+            "health": "#008000",
+            "shield": "#0000FF"
+        }
+    },
+
+    "rarities": {
+        "common": "44%",
+        "uncommon": "28%",
+        "rare": "14%",
+        "epic": "8%",
+        "devil": "5.5%",
+        "god": "0.5%"
+    },
+
+    "items": {
+        "1": {
+            "type": "common",
+            "stats": {
+                "damage": {
+                    "type": "*",
+                    "value": "10"
+                }
+            }
+        },
+        "2": {
+            "type": "uncommon",
+            "stats": {
+                "runSpeed": { "type": "+", "value": "2" },
+                "walkSpeed": { "type": "+", "value": "1" }
+            }
+        },
+        "3": {
+            "type": "rare",
+            "stats": {
+                "bulletDamage": { "type": "+", "value": "5" },
+                "reloadSpeed": { "type": "-", "value": "0.2" }
+            }
+        },
+        "4": {
+            "type": "epic",
+            "stats": {
+                "maxHealth": { "type": "+", "value": "20" },
+                "healthRegen": { "type": "+", "value": "0.5" }
+            }
+        },
+        "5": {
+            "type": "devil",
+            "stats": {
+                "bulletSpeed": { "type": "*", "value": "1.5" },
+                "bodyDamage": { "type": "+", "value": "10" }
+            }
+        },
+        "6": {
+            "type": "god",
+            "stats": {
+                "maxShield": { "type": "+", "value": "50" },
+                "shieldRegen": { "type": "+", "value": "2" },
+                "accel": { "type": "*", "value": "1.2" }
+            }
+        }
+    }   
+}

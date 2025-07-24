@@ -27,9 +27,29 @@ shield (blue)
 
 -- TYPES --
 
-common (gray)
-uncommon (light gray)
-rare (yellow)
-epic (purple)
+common (no color)
+uncommon (gray)
+rare (purple)
+epic (gold)
 devil (black)
 god (white)
+
+-- HOW THE COLORS WORK --
+
+glow = type color
+for each stat adjusted a color is added to a gradient.
+
+example 1
+stats: speed
+type: common
+colors: object = yellow, glow = null
+
+example 2
+stats: damage, bullet
+type: uncommon
+colors: object = gradient(red, orange), glow = gray
+
+example 3
+stats: damage, bullet, speed, health
+type: god
+colors: object = gradient(red, orange, yellow, green), glow = purple
