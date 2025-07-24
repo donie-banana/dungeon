@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
         input = Keyboard.current;
         mouse = Mouse.current;
         stats = GetComponent<Stats>();
+        playerCamera = Camera.main;
 
         axes = new (Key, Func<Vector3>)[]
         { 

@@ -9,7 +9,12 @@ public class CameraController : MonoBehaviour
     public float sens;
 
     private float pitch = 0f; 
-    public float maxPitch = 80f; 
+    public float maxPitch = 80f;
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+    }
 
     // Update is called once per frame
     void Update()
