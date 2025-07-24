@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
@@ -11,12 +12,12 @@ public class CameraController : MonoBehaviour
     private float pitch = 0f; 
     public float maxPitch = 80f;
 
-    void Start()
+    private IEnumerator Start()
     {
+        yield return null;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.position = player.transform.position + new Vector3(0f, 1f, 0f);
@@ -27,6 +28,10 @@ public class CameraController : MonoBehaviour
         pitch -= mouseY * sens / 10;
         pitch = Mathf.Clamp(pitch, -maxPitch, maxPitch);
 
-        transform.rotation = Quaternion.Euler(pitch, transform.eulerAngles.y + mouseX * sens / 10, 0f);
+        transform.rotation = Quaternion.Euler(
+            pitch,
+            transform.eulerAngles.y + mouseX * sens / 10,
+            0f
+        );
     }
 }
