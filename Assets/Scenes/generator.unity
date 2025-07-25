@@ -148,16 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0133734196c219140a77e9fc79d208af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomCount: 10
+  roomCount: 15
   player: {fileID: 1278745123201320305, guid: a16620d50917ba243ac82455b895279b, type: 3}
-  item: {fileID: 8621774103251976781, guid: ef600685c21188648b04c2f3828679ea, type: 3}
-  floor: {fileID: 6021584383933432590, guid: 0f1e62a0487d82a47933607301056390, type: 3}
-  wall: {fileID: 8461040140014781798, guid: 6b03baa1ccee28d4e876c301084dc9fe, type: 3}
-  corner: {fileID: 8270572573931469710, guid: deaa556323942e645b4b4fa6fa7583e1, type: 3}
-  dCorner: {fileID: 3840125250493822030, guid: 578db8f85fdc20f47ba2fdb685788e74, type: 3}
-  smallRoom: {fileID: 971800140194116063, guid: 0e6de14f5574d2f47922d0523d26e1ab, type: 3}
   startRoom: {fileID: 5594501802722990638, guid: 87705c271ddf7b547bc39380707be69e, type: 3}
-  hallway: {fileID: 3470477215975892706, guid: e272ee0c78aae1a45a0dc05a7af6329a, type: 3}
+  floor: {fileID: 6021584383933432590, guid: 0f1e62a0487d82a47933607301056390, type: 3}
 --- !u!4 &807425160
 Transform:
   m_ObjectHideFlags: 0
@@ -167,7 +161,7 @@ Transform:
   m_GameObject: {fileID: 807425158}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.4, y: 0.10911, z: 4.3357}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
