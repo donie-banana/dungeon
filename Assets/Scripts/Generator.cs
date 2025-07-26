@@ -4,22 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class Generator : MonoBehaviour
 {
-    // grid coords in units of 'size'
     private HashSet<Vector3Int> usedSpaces = new HashSet<Vector3Int> { new Vector3Int(0, 0, 0) };
     private HashSet<Vector3Int> frontier = new HashSet<Vector3Int>();
+    private List<List<Vector3Int>> rooms = new List<List<Vector3Int>>();
     public int roomCount;
     private Vector3Int[] offsets;
     private int size = 8;
+    private Dictionary<bool[], GameObject> tileTypes;
 
     private Func<int, int, int> random = UnityEngine.Random.Range;
 
-    // room prefabs…
-    public GameObject player, floor, dCorner, dWalls, corner, hallway, smallRoom, wall, empty;
+    public GameObject player, floor, dCorner, dWalls, corner, hallway, smallRoom, wall;
 
     void Start()
     {
@@ -30,7 +29,14 @@ public class Generator : MonoBehaviour
             new Vector3Int( 0, 0,-1),
         };
 
-        // initialize frontier around (0,0,0)
+        tileTypes = new Dictionary<bool[], GameObject>(new BoolArrayComparer())
+        {
+            { new[] { true, true, false, true }, dCorner },
+            { new[] { true, true, false, false }, corner },
+            { new[] { true, false, false, false }, wall },
+            { new[] { true, false, true, false }, dWalls },
+        };
+
         UpdateFrontier(new Vector3Int(0, 0, 0));
 
         Instantiate(smallRoom, scaleVector(Vector3Int.zero), quaternion.identity);
@@ -40,6 +46,7 @@ public class Generator : MonoBehaviour
         frontier.RemoveWhere(f => f == new Vector3Int(0, 0, 0));
 
         Generate();
+        PrintRooms();
     }
 
     void Generate()
@@ -81,7 +88,6 @@ public class Generator : MonoBehaviour
                 Debug.LogWarning($"# {i} failed after {maxTries} tries");
         }
 
-        // checkConnections();
         checkOverlapping();
     }
 
@@ -94,8 +100,6 @@ public class Generator : MonoBehaviour
         return arr[random(0, arr.Length)];
     }
 
-    // Tries to grow a connected region of 'count' cells from start;
-    // returns world-grid positions if successful, null otherwise.
     List<Vector3Int>? FindSpaces(Vector3Int start, int count)
     {
         var picked = new List<Vector3Int> { start };
@@ -103,7 +107,6 @@ public class Generator : MonoBehaviour
 
         for (int k = 1; k < count; k++)
         {
-            // shuffle current picks once per layer
             int n = picked.Count;
             for (int i = n - 1; i > 0; i--)
             {
@@ -116,7 +119,7 @@ public class Generator : MonoBehaviour
                 foreach (var off in offsets)
                 {
                     var cand = cell + off;
-                    if (localUsed.Add(cand)) // only true if was absent
+                    if (localUsed.Add(cand))
                     {
                         picked.Add(cand);
                         found = true;
@@ -124,7 +127,7 @@ public class Generator : MonoBehaviour
                     }
                 }
             NEXT:
-            if (!found) return null; // does this work for preventing overlaps?
+            if (!found) return null;
         }
 
         if (OverlapsExisting(picked)) return null;
@@ -134,49 +137,72 @@ public class Generator : MonoBehaviour
 
     void PlaceRoom(List<Vector3Int> cells, bool isEmpty = false)
     {
-        // alleen écht nieuwe coords overhouden
         var newCells = cells
             .Where(c => !usedSpaces.Contains(c))
             .ToList();
 
-        // update sets & frontier enkel voor die newCells
+        List<Vector3Int> room = new List<Vector3Int>();
+
         foreach (var c in newCells)
         {
+            room.Add(c);
             usedSpaces.Add(c);
             UpdateFrontier(c);
         }
 
-        // prune frontier
+        rooms.Add(room);
+
         frontier.RemoveWhere(f => usedSpaces.Contains(f));
 
-        // als er niks nieuws is, niks instantiëren
         if (isEmpty || newCells.Count == 0)
             return;
 
-        CreateRoom(newCells);
+        CreateRoom(new HashSet<Vector3Int>(newCells));
     }
 
-    void CreateRoom(List<Vector3Int> room)
+    void CreateRoom(HashSet<Vector3Int> room)
     {
-        if (room.Count == 1)
-        {
-            Debug.Log("smallRoom");
-            Instantiate(smallRoom, scaleVector(room[0]), quaternion.identity);
-            return;
-        }
+        if (room.Count == 0) return;
 
-        GameObject parent = Instantiate(empty, scaleVector(room[0]), quaternion.identity);
-        parent.name = $"R{UnityEngine.Random.Range(10000, 100000).ToString()}";
+        Color color = UnityEngine.Random.ColorHSV(0f, 1f, 0.7f, 1f, 0.5f, 0.85f);
 
-        var col = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-        foreach (var c in room)
+        GameObject parent = new GameObject();
+        parent.transform.position = scaleVector(room.First());
+        parent.name = random(1, 10001).ToString();
+        parent.tag = "Room";
+
+        foreach (Vector3Int space in room)
         {
-            var worldPos = scaleVector(c);
-            var tile = Instantiate(floor, worldPos, quaternion.identity);
-            tile.name = $"F{UnityEngine.Random.Range(10000, 100000).ToString()}";
-            tile.transform.SetParent(parent.transform);
-            foreach (var r in tile.GetComponentsInChildren<Renderer>())
-                r.material.color = col;
+            List<bool> walls = new List<bool>();
+
+            foreach (Vector3Int off in offsets)
+            {
+                if (!room.Contains(off + space)) walls.Add(true);
+                else walls.Add(false);
+            }
+
+            // Detect if this is a straight corridor (two opposite walls open, two closed)
+            bool isCorridor = (walls.Count == 4) &&
+                ((walls[0] && walls[2] && !walls[1] && !walls[3]) || (!walls[0] && !walls[2] && walls[1] && walls[3]));
+
+            (GameObject? tile, int degrees) = CompareWalls(walls, isCorridor);
+
+            if (tile == null)
+            {
+                Debug.LogError("tile = null");
+                continue;
+            }
+
+            GameObject? placed = Instantiate(tile, scaleVector(space), Quaternion.Euler(0, degrees, 0));
+
+            if (placed == null)
+            {
+                Debug.LogError("not placed");
+                return;
+            }
+
+            placed.transform.SetParent(parent.transform);
+            colorTile(placed, color);
         }
     }
 
@@ -186,7 +212,7 @@ public class Generator : MonoBehaviour
         {
             var n = added + off;
             if (!usedSpaces.Contains(n))
-                frontier.Add(n); // HashSet ignores duplicates
+                frontier.Add(n);
         }
     }
 
@@ -249,5 +275,99 @@ public class Generator : MonoBehaviour
 
         if (!overlapFound)
             Debug.Log("No overlapping child positions found.");
+    }
+
+    void PrintRooms()
+    {
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            string coords = string.Join(", ", rooms[i].Select(v => $"({v.x},{v.y},{v.z})"));
+            Debug.Log($"Room {i}: {coords}");
+        }
+    }
+
+    (GameObject?, int) CompareWalls(List<bool> walls, bool isCorridor = false)
+    {
+        GameObject? tile = null;
+        int degrees = 0;
+        List<bool> checker = new List<bool>();
+
+        if (!walls.Contains(true) || !walls.Contains(false))
+        {
+            degrees = 0;
+
+            if (!walls.Contains(true))
+            {
+                tile = floor;
+            }
+            else
+            {
+                tile = smallRoom;
+            }
+        }
+        else
+        {
+            for (int i = 0; i <= 8; i++)
+            {
+                checker.Add(walls[i % 4]);
+                if (checker.Count > 4) checker.RemoveAt(0);
+
+                if (checker.Count == 4)
+                {
+                    var arr = checker.ToArray();
+                    if (tileTypes.TryGetValue(arr, out var foundTile))
+                    {
+                        if (foundTile == dWalls && isCorridor && UnityEngine.Random.value < 0.2f)
+                            tile = hallway;
+                        else
+                            tile = foundTile;
+                        degrees = 360 - (i - 4) * 90;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (tile == null) return (null, 0);
+
+        return (tile, degrees);
+    }
+
+    // Color each child and child of child if they have a renderer
+    void colorTile(GameObject tile, Color color)
+    {
+        foreach (var renderer in tile.GetComponentsInChildren<Renderer>(true))
+        {
+            renderer.material.color = color;
+        }
+    }
+}
+
+public class BoolArrayComparer : IEqualityComparer<bool[]>
+{
+    public bool Equals(bool[]? x, bool[]? y)
+    {
+        if (x == null || y == null || x.Length != y.Length)
+            return false;
+
+        for (int i = 0; i < x.Length; i++)
+        {
+            if (x[i] != y[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public int GetHashCode(bool[] obj)
+    {
+        int hash = 17;
+
+        foreach (bool b in obj)
+        {
+            hash = hash * 31 + (b ? 1 : 0);
+        }
+
+        return hash;
     }
 }
