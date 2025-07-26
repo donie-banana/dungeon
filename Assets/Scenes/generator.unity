@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0133734196c219140a77e9fc79d208af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomCount: 50
+  roomCount: 10
   player: {fileID: 1278745123201320305, guid: a16620d50917ba243ac82455b895279b, type: 3}
   floor: {fileID: 2178273906217943069, guid: 0f1e62a0487d82a47933607301056390, type: 3}
   dCorner: {fileID: 8806782953154614776, guid: 578db8f85fdc20f47ba2fdb685788e74, type: 3}

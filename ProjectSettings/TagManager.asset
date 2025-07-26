@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Room
+  - North
+  - East
+  - South
+  - West
+  - Door
   layers:
   - Default
   - TransparentFX

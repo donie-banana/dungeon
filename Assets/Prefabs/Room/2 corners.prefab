@@ -550,8 +550,8 @@ GameObject:
   m_Component:
   - component: {fileID: 597632137789756899}
   m_Layer: 0
-  m_Name: Door frame 2
-  m_TagString: Untagged
+  m_Name: Door frame
+  m_TagString: North
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -584,8 +584,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5584730427607673682}
   m_Layer: 0
-  m_Name: Wall 2
-  m_TagString: Untagged
+  m_Name: Wall
+  m_TagString: North
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -623,7 +623,7 @@ GameObject:
   - component: {fileID: 5038986883320136778}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -944,8 +944,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7414888699874625483}
   m_Layer: 0
-  m_Name: Door frame 3
-  m_TagString: Untagged
+  m_Name: Door frame
+  m_TagString: South
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1303,7 +1303,7 @@ GameObject:
   - component: {fileID: 4682353131910139569}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: East
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1554,7 +1554,7 @@ GameObject:
   - component: {fileID: 6435980266812329788}
   m_Layer: 0
   m_Name: Door frame
-  m_TagString: Untagged
+  m_TagString: East
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1699,7 +1699,7 @@ GameObject:
   - component: {fileID: 7204565543376443163}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2343,8 +2343,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8070692153299000241}
   m_Layer: 0
-  m_Name: Wall 3
-  m_TagString: Untagged
+  m_Name: Wall
+  m_TagString: South
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2540,10 +2540,10 @@ Transform:
   - {fileID: 4849635629302950654}
   - {fileID: 6435980266812329788}
   - {fileID: 7414888699874625483}
+  - {fileID: 597632137789756899}
   - {fileID: 4682353131910139569}
   - {fileID: 5584730427607673682}
   - {fileID: 8070692153299000241}
-  - {fileID: 597632137789756899}
   m_Father: {fileID: 5730109300838575068}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &9083392052373440213
@@ -2560,7 +2560,7 @@ GameObject:
   - component: {fileID: 5775686340939005356}
   m_Layer: 0
   m_Name: Door
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

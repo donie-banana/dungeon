@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+// using System.Numerics; commented this to prevent my IDE from adding it over and over again
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -10,9 +11,10 @@ public class Generator : MonoBehaviour
 {
     private HashSet<Vector3Int> usedSpaces = new HashSet<Vector3Int> { new Vector3Int(0, 0, 0) };
     private HashSet<Vector3Int> frontier = new HashSet<Vector3Int>();
-    private List<List<Vector3Int>> rooms = new List<List<Vector3Int>>();
+    private List<Dictionary<Vector3Int, GameObject>> rooms = new List<Dictionary<Vector3Int, GameObject>>();
     public int roomCount;
     private Vector3Int[] offsets;
+    private string[] directions;
     private int size = 8;
     private Dictionary<bool[], GameObject> tileTypes;
 
@@ -37,6 +39,13 @@ public class Generator : MonoBehaviour
             { new[] { true, false, true, false }, dWalls },
         };
 
+        directions = new[] {
+            "South",
+            "East",
+            "North",
+            "West"
+        };
+
         UpdateFrontier(new Vector3Int(0, 0, 0));
 
         Instantiate(smallRoom, scaleVector(Vector3Int.zero), quaternion.identity);
@@ -46,7 +55,7 @@ public class Generator : MonoBehaviour
         frontier.RemoveWhere(f => f == new Vector3Int(0, 0, 0));
 
         Generate();
-        PrintRooms();
+        // PrintRooms();
     }
 
     void Generate()
@@ -150,8 +159,6 @@ public class Generator : MonoBehaviour
             UpdateFrontier(c);
         }
 
-        rooms.Add(room);
-
         frontier.RemoveWhere(f => usedSpaces.Contains(f));
 
         if (isEmpty || newCells.Count == 0)
@@ -170,6 +177,10 @@ public class Generator : MonoBehaviour
         parent.transform.position = scaleVector(room.First());
         parent.name = random(1, 10001).ToString();
         parent.tag = "Room";
+        
+        rooms.Add(new Dictionary<Vector3Int, GameObject>());
+
+        Dictionary<Vector3Int, GameObject> latestRoom = rooms[rooms.Count - 1];
 
         foreach (Vector3Int space in room)
         {
@@ -201,8 +212,60 @@ public class Generator : MonoBehaviour
                 return;
             }
 
+            latestRoom.Add(space, placed);
+
             placed.transform.SetParent(parent.transform);
             colorTile(placed, color);
+
+            // --- Open doors/walls immediately between adjacent tiles ---
+            for (int dir = 0; dir < offsets.Length; dir++)
+            {
+                Vector3Int neighbor = space + offsets[dir];
+                if (usedSpaces.Contains(neighbor) && neighbor != space)
+                {
+                    // Remove wall/door on this tile
+                    RemoveDoor(placed, directions[(degrees / 90 + dir) % 4]);
+                    // Remove wall/door on the neighbor tile (if it's in any room)
+                    foreach (var roomDict in rooms)
+                    {
+                        if (roomDict.TryGetValue(neighbor, out var neighborObj))
+                        {
+                            RemoveDoor(neighborObj, directions[(dir + degrees / 90 + 2) % 4]); // Opposite direction
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void RemoveDoor(GameObject tile, string direction)
+    {
+        foreach (Transform child in tile.transform)
+        {
+            // still looking for the directional Wall piece
+            if (child.CompareTag(direction) && child.name == "Wall")
+            {
+                RemoveDoorRecursive(child);
+            }
+        }
+    }
+
+    // Recursively search for and destroy any Door, regardless of "(Clone)" suffix
+    void RemoveDoorRecursive(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            // if this transform is tagged "Door" (or its name starts with "Door")
+            if (child.CompareTag("Door") || child.name.StartsWith("Door"))
+            {
+                Debug.Log($"Destroying door object: {child.name} under {parent.name}");
+                Destroy(child.gameObject);
+            }
+            else
+            {
+                // otherwise, keep digging
+                RemoveDoorRecursive(child);
+            }
         }
     }
 
@@ -275,15 +338,6 @@ public class Generator : MonoBehaviour
 
         if (!overlapFound)
             Debug.Log("No overlapping child positions found.");
-    }
-
-    void PrintRooms()
-    {
-        for (int i = 0; i < rooms.Count; i++)
-        {
-            string coords = string.Join(", ", rooms[i].Select(v => $"({v.x},{v.y},{v.z})"));
-            Debug.Log($"Room {i}: {coords}");
-        }
     }
 
     (GameObject?, int) CompareWalls(List<bool> walls, bool isCorridor = false)
